@@ -33,21 +33,25 @@ class Application(object):
             4. With some small probability go to step 1. Else step 2.
         """
         while True:
-            username, password = random.choice(self.metadata_provider.get_all_accounts())
-            data_source = ChromeSeleniumDataSource(username=username, password=password, query_url=self.query_url)
-            while True:
-                try:
-                    queries = self.metadata_provider.get_all_queries()
-                    item_finder = ItemFinder(data_source=data_source, queries=queries)
-                    result = item_finder.find_anomalies()
-                    if result:
-                        self.__publish(result)
-                except Exception as e:
-                    logging.error(e)
-                    pass
-                finally:
-                    sleep(random.randint(5 * 60, 10 * 60))
+            try:
+                username, password = random.choice(self.metadata_provider.get_all_accounts())
+                data_source = ChromeSeleniumDataSource(username=username, password=password, query_url=self.query_url)
+                while True:
+                    try:
+                        queries = self.metadata_provider.get_all_queries()
+                        item_finder = ItemFinder(data_source=data_source, queries=queries)
+                        result = item_finder.find_anomalies()
+                        if result:
+                            self.__publish(result)
+                    except Exception as e:
+                        logging.error(e)
+                        pass
+                    finally:
+                        sleep(random.randint(5 * 60, 10 * 60))
 
-                if random.random() <= 0.1:  # 10% chance to choose credentials again
-                    break
-            del data_source
+                    if random.random() <= 0.1:  # 10% chance to choose credentials again
+                        break
+                del data_source
+            except Exception as e:
+                logging.error(e)
+                pass
