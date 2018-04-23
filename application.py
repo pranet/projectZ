@@ -14,16 +14,21 @@ class Application(object):
         self.metadata_provider = metadata_provider
         self.notifier = notifier
         self.query_url = query_url
+        self.previous_message = None
 
     def __publish(self, results):
-        subject = "Found items matching your requirements".format(len(results))
+        subject = "Found items matching your requirements"
         lines = list()
         for i, result in enumerate(results):
             lines.append(str(i + 1) + ". " + str(result))
         message = "\n".join(lines)
-        self.notifier.publish(subject, message)
-        logging.info("Subject: {} ".format(subject))
-        logging.info("Message: {} ".format(message))
+
+        if message == self.previous_message:
+            logging.info("Repeated message: {} ".format(message))
+        else:
+            self.notifier.publish(subject, message)
+            self.previous_message = message
+            logging.info("Message: {} ".format(message))
 
     def run(self):
         """
