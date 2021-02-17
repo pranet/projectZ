@@ -16,7 +16,7 @@ class Result:
 
 
 class Query:
-    def __init__(self, keyword, ignore, maximum_price):
+    def __init__(self, keyword, ignore, maximum_price: int):
         self.keyword = keyword
         self.ignore = ignore
         self.maximum_price = maximum_price

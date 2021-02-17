@@ -1,14 +1,30 @@
 from abc import ABC, abstractmethod
+from bs4 import BeautifulSoup
+import re
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from models import Result
 
-
 class AbstractDataSource(ABC):
     @abstractmethod
     def get_all_entries(self, keyword: str):
         pass
+
+class ChromePluginDataSource(AbstractDataSource):
+    def __init__(self, raw_data: list):
+        self.raw_data = raw_data
+
+    def get_all_entries(self, keyword: str):
+        data = map(lambda columns: Result(
+            name=BeautifulSoup(columns[0], features="html.parser").a.contents[0].strip(),
+            price=int(columns[1].replace(",", "")),
+            quantity=columns[2],
+            s_name=columns[3],
+            where=columns[4]
+        ), self.raw_data)
+
+        return filter(lambda entry: keyword.lower() in entry.name.lower(), data)
 
 
 class ChromeSeleniumDataSource(AbstractDataSource):
