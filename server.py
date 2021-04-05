@@ -4,6 +4,7 @@ from data_sources import ChromePluginDataSource
 from item_finder import ItemFinder
 from models import Query
 import configparser
+import os
 from metadata_providers_factory import MetadataProvidersFactory
 
 
@@ -25,5 +26,6 @@ def processData():
     return jsonify(list(map(lambda x: str(x), result)))
 
 if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
     metadata_provider = get_metadata_provider()
-    app.run(host="0.0.0.0", debug=True)
+    app.run(host="0.0.0.0", debug=True, port=port)
